@@ -1,0 +1,8 @@
+.env
+venv
+__pycache__
+templates
+migrations
+
+project_tree.sh
+server.py
