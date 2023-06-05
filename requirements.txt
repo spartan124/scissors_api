@@ -1,0 +1,8 @@
+flask
+flask_sqlalchemy
+flask_restx
+stoplight
+flask_caching
+redis
+python-decouple
+python-dotenv
