@@ -1,4 +1,4 @@
-import datetime as dt
+from datetime import datetime
 import qrcode
 
 from flask_restx import Resource, Namespace, fields, abort
@@ -23,7 +23,7 @@ url_response_model = url_ns.model('URLResponse', {
     'short_code': fields.String(required=True, description='Shortened URL'),
     'original_url': fields.String(required=True, description='Original URL'),
     'id': fields.Integer(required=True, description='URL ID'),
-    'timestamp': fields.String(required=True, description='Timestamp')
+    'created_at': fields.String(required=True, description='Timestamp')
 })
 
 def generate_short_code():
@@ -117,10 +117,10 @@ class URLRedirect(Resource):
         url = Url.query.filter_by(short_code=short_code).first()
         if url:
             original_url = url.original_url
-            url.last_used_at = dt.datetime.utcnow()
+            url.last_used_at = datetime.utcnow()
             url.click_count += 1
             url.click_source = request.remote_addr
-            update()
+            update(url)
             return redirect(original_url)
         
         return {"message": "Url not found"}, 404
