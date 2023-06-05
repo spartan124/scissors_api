@@ -6,3 +6,4 @@ migrations
 
 project_tree.sh
 server.py
+*.sqlite3
