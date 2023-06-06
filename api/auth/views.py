@@ -16,7 +16,7 @@ signup_model = namespace.model(
         "email": fields.String(required=True, description="User's email address"),
         "phone": fields.String(required=True, description="User's Phone number"),
         "password": fields.String(required=True, description="User's Account Password"),
-        # "role": fields.String(required=True, description="User's role")
+       
 
     }
 )
