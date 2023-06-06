@@ -1,14 +1,16 @@
 from datetime import datetime
 import qrcode
-
+from ..config.config import Config
 from flask_restx import Resource, Namespace, fields, abort
 from flask import make_response, render_template, request, redirect, send_file
 from ..models import Url, save, delete, update
+from flask_jwt_extended import jwt_required, get_jwt_identity
 import string
 import random
 # from flask_caching import cache
 from io import BytesIO
 import base64
+import requests
 
 
 url_ns = Namespace("", description="URL Shortener API Operations...")
@@ -33,17 +35,26 @@ def generate_short_code():
     short_code = ''.join(random.choice(chars) for _ in range(6))
     return short_code
 
+def get_geolocation(ip_address):
+        response = requests.get(f'{Config.IPSTACK_API_URL}/{ip_address}?access_key={Config.IPSTACK_ACCESS_KEY}')
+        if response.status_code == 200:
+            data = response.json()
+            if 'city' in data and 'country_name' in data:
+                return f'{data["city"]}, {data["country_name"]}'
+        return ''
 
 @url_ns.route('/shorten')
 
 class URLShortener(Resource):
     @url_ns.expect(url_request_model, validate=True)
+    @jwt_required()
     def post(self):
         """
         Create a new shortened URL.
         """
         original_url = request.json.get('original_url')
         short_code = request.json.get('short_code')
+        user_id = get_jwt_identity()
         
         base_url = request.host_url
         
@@ -53,21 +64,23 @@ class URLShortener(Resource):
         
             
         # Generate a short code
-        if short_code is None or short_code == "":
+        if short_code is None or short_code in ["", "string"]:
             
             short_code = generate_short_code()
         
     
             url = Url(
                 original_url=original_url,
-                short_code=short_code
+                short_code=short_code,
+                user_id=user_id
             )
 
             save(url)
         else:
             url = Url(
                 original_url=original_url,
-                short_code=short_code
+                short_code=short_code,
+                user_id=user_id
                 )
             save(url)
         
@@ -94,6 +107,7 @@ class URLShortener(Resource):
         return {'shortened_url': shortened_url}, 201
     
     @url_ns.marshal_with(url_response_model)
+    @jwt_required()
     def get(self):
         """Get all shortened urls
 
@@ -119,14 +133,16 @@ class URLRedirect(Resource):
             original_url = url.original_url
             url.last_used_at = datetime.utcnow()
             url.click_count += 1
-            url.click_source = request.remote_addr
+            url.click_source = get_geolocation(request.remote_addr)
             update(url)
             return redirect(original_url)
         
         return {"message": "Url not found"}, 404
     
+    
 @url_ns.route("/shortened/<short_code>")   
 class OriginalUrl(Resource):
+    @jwt_required()
     def get(self, short_code):
         url = Url.query.filter_by(short_code=short_code).first()
         
@@ -145,6 +161,7 @@ class OriginalUrl(Resource):
 
 @url_ns.route('/analytics/<short_code>')
 class ShortUrlAnalytics(Resource):
+    @jwt_required()
     def get(self, short_code):
         
         url = Url.query.filter_by(short_code=short_code).first()
@@ -159,3 +176,5 @@ class ShortUrlAnalytics(Resource):
   
             }
         return {"message": "URL not found"}, 404
+    
+    
