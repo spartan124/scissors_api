@@ -12,8 +12,11 @@ class Url(db.Model):
     last_used_at = db.Column(db.DateTime)
     click_count = db.Column(db.Integer, default=0)
     click_source = db.Column(db.String(200))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
 
-    def __init__(self, short_code, original_url):
+
+    def __init__(self, short_code, original_url, user_id):
         self.short_code = short_code
         self.original_url = original_url
+        self.user_id = user_id
