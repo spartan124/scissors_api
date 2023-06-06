@@ -12,6 +12,9 @@ class Config:
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(hours=272)
     JWT_SECRET_KEY = config('JWT_SECRET_KEY')
     ERROR_INCLUDE_MESSAGE = False
+    IPSTACK_ACCESS_KEY = config('IPSTACK_ACCESS_KEY')
+    IPSTACK_API_URL = 'http://api.ipstack.com/'
+
 
 
 class DevConfig(Config):
