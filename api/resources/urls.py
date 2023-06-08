@@ -176,5 +176,30 @@ class ShortUrlAnalytics(Resource):
   
             }
         return {"message": "URL not found"}, 404
+@url_ns.route('/history')    
+class UrlHistory(Resource):
+    @jwt_required()
+    def get(self):
+        """
+        Get a specifi user's url link history
+        """
+        user_id = get_jwt_identity()
+        
+        urls = Url.query.filter_by(user_id=user_id).all()
+        
+        history = []
+        
+        for url in urls:
+            history.append({
+                'short_code': url.short_code,
+                'original_url': url.original_url,
+                'created_at': url.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                'last_used_at': url.last_used_at.strftime("%Y-%m-%d %H:%M:%S") if url.last_used_at else None,
+                'click_count': url.click_count,
+                'click_source': url.click_source
+            })
+
+        return {'history': history}
+    
     
     
