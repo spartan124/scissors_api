@@ -3,7 +3,7 @@ from ..db import db
 from flask_restx import abort
 from .users import User
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
-from .urls import Url
+from .urls import Url, Click
 
 
 def save(self):
