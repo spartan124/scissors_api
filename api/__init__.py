@@ -1,28 +1,29 @@
 from flask import Flask
 from flask_restx import Api
 from .db import db
-from .config.config import config_dict
+from .config.config import config_dict, cache, limiter
 from .auth.views import namespace as auth_namespace
 from .resources.urls import url_ns
-from flask_caching import Cache
+
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_jwt_extended.exceptions import JWTExtendedException
 import redis
 
-cache = Cache()
+
+
 
 def create_app(config=config_dict['dev']):
     app = Flask(__name__)
     
     app.config.from_object(config)
-    app.config['CACHE_TYPE'] = 'redis'
-    app.config['CACHE_REDIS_URL'] = 'redis://localhost:6379/0'
     
     db.init_app(app)
     cache.init_app(app)
     
     redis_client = redis.Redis(host='localhost', port=6379, db=0)
+    
+    limiter.init_app(app)
     
     migrate = Migrate(app, db)
     
@@ -58,3 +59,5 @@ def create_app(config=config_dict['dev']):
 
         }
     return app
+
+app = create_app()
