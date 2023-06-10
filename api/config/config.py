@@ -1,9 +1,25 @@
 import os
 from datetime import timedelta
-
+from flask_caching import Cache
 from decouple import config
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+
+CACHE_TYPE = 'redis'
+CACHE_REDIS_URL = 'redis://localhost:6379/0'
+CACHE_DEFAULT_TIMEOUT = 300  # Cache timeout in seconds
+
+cache = Cache(config={'CACHE_TYPE': CACHE_TYPE, 'CACHE_REDIS_URL': CACHE_REDIS_URL}, with_jinja2_ext=False)
+
+limiter = Limiter(
+  get_remote_address,
+  storage_uri="redis://localhost:6379",
+  storage_options={"socket_connect_timeout": 30},
+  strategy="fixed-window"
+)
 
 
 class Config:
@@ -14,6 +30,9 @@ class Config:
     ERROR_INCLUDE_MESSAGE = False
     IPSTACK_ACCESS_KEY = config('IPSTACK_ACCESS_KEY')
     IPSTACK_API_URL = 'http://api.ipstack.com/'
+    
+    
+    
 
 
 
