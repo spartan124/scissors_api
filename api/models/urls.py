@@ -6,7 +6,7 @@ class Click(db.Model):
     __tablename__ = "click"
     
     id = db.Column(db.Integer, primary_key=True)
-    url_id = db.Column(db.Integer, db.ForeignKey('urls.id'), nullable=False)
+    url_id = db.Column(db.Integer, db.ForeignKey('url.id'), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     click_source = db.Column(db.String(255))
 
@@ -20,7 +20,7 @@ class Url(db.Model):
     last_used_at = db.Column(db.DateTime)
     click_count = db.Column(db.Integer, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    clicks = db.relationship('Click', backref='urls', lazy=True)
+    clicks = db.relationship('Click', backref='url', lazy=True)
 
 
 
