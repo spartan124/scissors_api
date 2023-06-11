@@ -9,7 +9,7 @@ from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_jwt_extended.exceptions import JWTExtendedException
 import redis
-
+from flask_cors import CORS
 
 
 
@@ -20,7 +20,7 @@ def create_app(config=config_dict['dev']):
     
     db.init_app(app)
     cache.init_app(app)
-    
+    CORS(app)
     redis_client = redis.Redis(host='localhost', port=6379, db=0)
     
     limiter.init_app(app)

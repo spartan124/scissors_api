@@ -50,6 +50,7 @@ class URLShortener(Resource):
         base_url = request.host_url
         
         url = Url.query.filter_by(original_url=original_url).first()
+        
         if url:
             shortened_url = f"{base_url}{url.short_code}"
         
