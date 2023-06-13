@@ -10,6 +10,7 @@ from .. import limiter
 from io import BytesIO
 import base64
 import requests
+import validators
 from . import is_url_valid, generate_short_code, get_geolocation
 
 url_ns = Namespace("", description="URL Shortener API Operations...")
@@ -41,7 +42,7 @@ class URLShortener(Resource):
         """
         original_url = request.json.get('original_url')
         
-        if not is_url_valid(original_url):
+        if not validators.url(original_url):
             return {'message': 'Invalid URL'}, 400
         
         short_code = request.json.get('short_code')
@@ -54,33 +55,33 @@ class URLShortener(Resource):
         if url:
             shortened_url = f"{base_url}{url.short_code}"
         
+        else:    
             
-        # Generate a short code
-        if short_code is None or short_code in ["", "string"]:
+            if short_code is None or short_code in ["", "string"]:
+                
+                short_code = generate_short_code()
             
-            short_code = generate_short_code()
         
-    
-            url = Url(
-                original_url=original_url,
-                short_code=short_code,
-                user_id=user_id
-            )
-
-            save(url)
-        else:
-            url = Url(
-                original_url=original_url,
-                short_code=short_code,
-                user_id=user_id
+                url = Url(
+                    original_url=original_url,
+                    short_code=short_code,
+                    user_id=user_id
                 )
-            save(url)
-        
-        shortened_url = f"{base_url}{short_code}"
-        
-        
+
+                save(url)
+            else:
+                url = Url(
+                    original_url=original_url,
+                    short_code=short_code,
+                    user_id=user_id
+                    )
+                save(url)
+            
+            shortened_url = f"{base_url}{short_code}"
+            
+            
         return {'shortened_url': shortened_url}, 201
-    
+        
     @url_ns.marshal_with(url_response_model)
     @jwt_required()
     @cache.cached(timeout=60)
