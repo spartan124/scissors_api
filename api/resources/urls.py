@@ -11,7 +11,8 @@ from io import BytesIO
 import base64
 import requests
 import validators
-from . import is_url_valid, generate_short_code, get_geolocation
+
+from . import generate_short_code, get_geolocation, normalize_url
 
 url_ns = Namespace("", description="URL Shortener API Operations...")
 
@@ -42,6 +43,8 @@ class URLShortener(Resource):
         """
         original_url = request.json.get('original_url')
         
+        normalized_url = normalize_url(original_url)
+        
         if not validators.url(original_url):
             return {'message': 'Invalid URL'}, 400
         
@@ -50,7 +53,7 @@ class URLShortener(Resource):
         
         base_url = request.host_url
         
-        url = Url.query.filter_by(original_url=original_url).first()
+        url = Url.query.filter_by(original_url=normalized_url).first()
         
         if url:
             shortened_url = f"{base_url}{url.short_code}"
@@ -63,7 +66,7 @@ class URLShortener(Resource):
             
         
                 url = Url(
-                    original_url=original_url,
+                    original_url=normalized_url,
                     short_code=short_code,
                     user_id=user_id
                 )
@@ -71,7 +74,7 @@ class URLShortener(Resource):
                 save(url)
             else:
                 url = Url(
-                    original_url=original_url,
+                    original_url=normalized_url,
                     short_code=short_code,
                     user_id=user_id
                     )
