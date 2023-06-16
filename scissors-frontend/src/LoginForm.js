@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, {  useState } from 'react';
 import api from './api';
-// import { setAccessToken, setRefreshToken } from './api';
-
-// After successful login, set the access token
-
+import { useNavigate, Link } from 'react-router-dom';
 
 function LoginForm() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const handleSubmit = async (event) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const navigate = useNavigate()
+  
+  const handleSubmit = async (event) => {
         event.preventDefault();
     
         try {
@@ -17,21 +17,16 @@ function LoginForm() {
             email,
             password,
           });
+          
     
           // Handle successful login
-          const { access_token,  } = response.data;
-          
-          
-          const accessToken = access_token;  // Replace with the actual token
+          const { access_token } = response.data;
+         
+          const accessToken = access_token;  
           api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
           
-          // const refreshToken = refresh_token;  // Replace with the actual token
-          // api.defaults.headers.common['Authorization'] = `Bearer ${refreshToken}`;
-
-          // console.log('Access Token:', access_token);
-          // console.log('Refresh Token:', refresh_token);
-    
-          // Reset form fields and error state
+       
+          
           setEmail('');
           setPassword('');
           setError('');
@@ -40,34 +35,73 @@ function LoginForm() {
           setError('Invalid email or password');
           console.error(error);
         }
-
+          navigate("/shorten")
       };
+
       return (
-        <div>
-          <h2>Login</h2>
+        <div className='wrapper text-center'>
+          <div className='formImg'>
+
+          </div>
+          
           <form onSubmit={handleSubmit}>
-            <label>
-              Email:
-              <input
-                type="email"
+          <div className='inputField'>
+          <h2>Login</h2>
+          <div class="mb-3">
+                <input type="email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-              />
-            </label>
-            <label>
-              Password:
-              <input
-                type="password"
+                class="form-control" id="email" placeholder="Email Address"/>
+            </div>
+            <div class="mb-3">
+                <input type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-              />
-            </label>
-            <button type="submit">Login</button>
+                class="form-control" id="password" placeholder="Password"/>
+            </div>
+            <button type="button" class="btn btn-primary" onClick={handleSubmit}>Login</button>
             {error && <p>{error}</p>}
+            </div>
+            <div class='mb-3 text-center' id="regLink" >
+            <p>Don't have an account? <Link to ='/register'>Please Signup</Link></p>
+            </div>
           </form>
         </div>
       );
-    }
+    };
     
-    export default LoginForm;
+    
+    
+function LogoutButton() {
+const navigate = useNavigate();
+
+const handleLogout = async () => {
+  try {
+      await api.post("/auth/logout");
+  }
+  catch (error) {
+      console.error("Logout failed", error);
+  }
+  navigate('/login');
+};
+
+  return (
+      <button class="btn btn-outline-primary me-2" type="button" onClick={handleLogout}>Logout</button>
+  );
+};
+
+const refreshAccessToken = async (refreshToken) => {
+  try {
+    // const refreshToken = localStorage.getItem('refreshToken'); 
+    const response = await api.post('/auth/refresh', { refresh_token: refreshToken });
+    const { access_token } = response.data;
+    localStorage.setItem('accessToken', access_token); 
+  } catch (error) {
+      console.error("Refresh token failed")
+  }
+};
+
+
+    
+export { LogoutButton, LoginForm, refreshAccessToken };
     
