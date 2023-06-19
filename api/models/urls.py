@@ -14,7 +14,7 @@ class Url(db.Model):
     __tablename__ = 'url'
     
     id = db.Column(db.Integer, primary_key=True)
-    original_url = db.Column(db.Text, nullable=False, unique=True)
+    original_url = db.Column(db.Text, nullable=False)
     short_code = db.Column(db.String(20), nullable=False, unique=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow())
     last_used_at = db.Column(db.DateTime)
