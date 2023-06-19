@@ -1,17 +1,18 @@
 from datetime import datetime
 import qrcode
 from flask_restx import Resource, Namespace, fields, abort
-from flask import make_response, render_template, request, redirect, send_file
+from flask import jsonify, make_response, render_template, request, redirect, send_file
 from ..models import Url, Click, save, delete, update
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..config.config import cache, limiter
 from .. import limiter
-# from flask_caching import cache
+from api.auth import jwt_required_with_blacklist
 from io import BytesIO
 import base64
 import requests
 import validators
-
+import matplotlib.pyplot as plt
+import io
 from . import generate_short_code, get_geolocation, normalize_url
 
 url_ns = Namespace("", description="URL Shortener API Operations...")
@@ -36,7 +37,7 @@ url_response_model = url_ns.model('URLResponse', {
 @url_ns.route('/shorten')
 class URLShortener(Resource):
     @url_ns.expect(url_request_model, validate=True)
-    @jwt_required()
+    @jwt_required_with_blacklist
     def post(self):
         """
         Create a new shortened URL.
@@ -49,11 +50,12 @@ class URLShortener(Resource):
             return {'message': 'Invalid URL'}, 400
         
         short_code = request.json.get('short_code')
-        user_id = get_jwt_identity()
+        user = get_jwt_identity()
+        user_id = user['id']
         
         base_url = request.host_url
         
-        url = Url.query.filter_by(original_url=normalized_url).first()
+        url = Url.query.filter_by(original_url=normalized_url, user_id=user_id).first()
         
         if url:
             shortened_url = f"{base_url}{url.short_code}"
@@ -85,8 +87,8 @@ class URLShortener(Resource):
             
         return {'shortened_url': shortened_url}, 201
         
-    @url_ns.marshal_with(url_response_model)
-    @jwt_required()
+    # @url_ns.marshal_with(url_response_model)
+    @jwt_required_with_blacklist
     @cache.cached(timeout=60)
     def get(self):
         """Get all shortened urls
@@ -94,8 +96,16 @@ class URLShortener(Resource):
         Returns:
             _type_: _description_
         """
-        url = Url.query.all()
-        return url
+        urls = Url.query.all()
+        
+        shortened_urls = []
+        
+        for url in urls:
+            base_url = request.host_url
+            shortened_url = f"{base_url}{url.short_code}"
+            shortened_urls.append(shortened_url)
+        
+        return {'shortened url': shortened_urls}
 
 @limiter.limit("5/second")    
 @url_ns.route('/<short_code>')
@@ -127,7 +137,7 @@ class URLRedirect(Resource):
     
 @url_ns.route("/shortened/<short_code>")   
 class OriginalUrl(Resource):
-    @jwt_required()
+    @jwt_required_with_blacklist
     @cache.cached(timeout=60)
     def get(self, short_code):
         url = Url.query.filter_by(short_code=short_code).first()
@@ -137,17 +147,20 @@ class OriginalUrl(Resource):
         
         original_url = url.original_url
         return original_url, 200
-    
+    @jwt_required_with_blacklist
     def delete(self, short_code):
-        url = Url.query.filter_by(short_code=short_code).first()
-        if url:
+        user = get_jwt_identity()
+        user_id = user['id']
+        
+        url = Url.query.filter_by(short_code=short_code, user_id=user_id).first()
+        if (url and user):
             delete(url)
             return {"message": "Url successfully deleted"}
         abort(404, message="Url not found")
 
 @url_ns.route("/<short_code>/qrcode")
 class GenerateQrCode(Resource):
-    @jwt_required()
+    @jwt_required_with_blacklist
     @cache.cached(timeout=60)
     def get(self, short_code):
         
@@ -178,11 +191,18 @@ class GenerateQrCode(Resource):
     
 @url_ns.route('/analytics/<short_code>')
 class ShortUrlAnalytics(Resource):
-    @jwt_required()
+    @jwt_required_with_blacklist
     @cache.cached(timeout=60)
     def get(self, short_code):
+        """
+        Get analytics for shortened url
+        """
+        user = get_jwt_identity()
+        user_id = user["id"]
         
-        url = Url.query.filter_by(short_code=short_code).first()
+        url = Url.query.filter_by(short_code=short_code, user_id=user_id).first()
+        if url is None:
+            return {'message':"Url not found"}, 404
         
         clicks = Click.query.filter_by(url_id=url.id).all()
         click_data = {}
@@ -192,7 +212,21 @@ class ShortUrlAnalytics(Resource):
             else:
                 click_data[click.click_source] = 1
     
-        if url:
+        if url and user['id']:
+            locations = list(click_data.keys())
+            click_counts = list(click_data.values())
+            
+            plt.bar(locations, click_counts)
+            plt.xlabel('Location')
+            plt.ylabel('Number of Clicks')
+            plt.title('Clicks per Location')
+            
+            image_buffer = io.BytesIO()
+            plt.savefig(image_buffer, format='png')
+            plt.close()
+            image_buffer.seek(0)
+            return send_file(image_buffer, mimetype='image/png')
+
             return {
                 'original_url': url.original_url,
                 'click_count': url.click_count,
@@ -201,16 +235,18 @@ class ShortUrlAnalytics(Resource):
                 'click_data': click_data
   
             }
-        return {"message": "URL not found"}, 404
+        return {"message": "User is not authorized to view this Url's analytics."}, 404
+    
 @url_ns.route('/history')    
 class UrlHistory(Resource):
-    @jwt_required()
+    @jwt_required_with_blacklist
     @cache.cached(timeout=60)
     def get(self):
         """
-        Get a specifi user's url link history
+        Get a specific user's url link history
         """
-        user_id = get_jwt_identity()
+        user = get_jwt_identity()
+        user_id = user['id']
         
         urls = Url.query.filter_by(user_id=user_id).all()
         
@@ -218,11 +254,14 @@ class UrlHistory(Resource):
         
         for url in urls:
             history.append({
-                'shortened_url': f"{request.host_url}{url.short_code}",
-                'original_url': url.original_url
+                'short_code': url.short_code,
+                'shortened_url': f"{request.host_url}{url.short_code}"
+                # 'original_url': url.original_url
             })
 
-        return {'history': history}
+        history_dict = {item['short_code']: item['shortened_url'] for item in history}
+
+        return jsonify(history_dict)
     
     
     
