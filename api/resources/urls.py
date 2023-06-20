@@ -227,14 +227,7 @@ class ShortUrlAnalytics(Resource):
             image_buffer.seek(0)
             return send_file(image_buffer, mimetype='image/png')
 
-            return {
-                'original_url': url.original_url,
-                'click_count': url.click_count,
-                'created_at': url.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                'last_used_at': url.last_used_at.strftime("%Y-%m-%d %H:%M:%S") if url.last_used_at else None,
-                'click_data': click_data
-  
-            }
+           
         return {"message": "User is not authorized to view this Url's analytics."}, 404
     
 @url_ns.route('/history')    

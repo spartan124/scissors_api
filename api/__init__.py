@@ -7,7 +7,7 @@ from .resources.urls import url_ns
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_jwt_extended.exceptions import JWTExtendedException
-
+from .resources import simple_geoip
 from flask_cors import CORS
 
 
@@ -21,7 +21,7 @@ def create_app(config=config_dict['prod']):
     db.init_app(app)
     cache.init_app(app)
     CORS(app)
-    
+    simple_geoip.init_app(app)
     limiter.init_app(app)
     
     migrate = Migrate(app, db)

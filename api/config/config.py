@@ -4,13 +4,10 @@ from flask_caching import Cache, SimpleCache
 from decouple import config
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-# import redis
+
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
-# redis_client = redis.Redis(host='redis://red-ci88lv18g3nfucemlqg0', port=6379, db=0)
 
-
-# CACHE_REDIS_URL = 'redis://red-ci88lv18g3nfucemlqg0:6379/'
 CACHE_DEFAULT_TIMEOUT = 300  # Cache timeout in seconds
 
 cache = Cache(config={'CACHE_TYPE': 'SimpleCache'}, with_jinja2_ext=False)
@@ -28,15 +25,9 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=120)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(hours=272)
     JWT_SECRET_KEY = config('JWT_SECRET_KEY')
-    ERROR_INCLUDE_MESSAGE = False
-    IPSTACK_ACCESS_KEY = config('IPSTACK_ACCESS_KEY')
-    IPSTACK_API_URL = 'http://api.ipstack.com/'
+    ERROR_INCLUDE_MESSAGE = False    
+    GEOIPIFY_API_KEY = config('GEOIPIFY_API_KEY')
     
-    
-    
-
-
-
 class DevConfig(Config):
     DEBUG = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
