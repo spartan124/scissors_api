@@ -9,8 +9,8 @@ import redis
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 redis_client = redis.Redis(host='redis://red-ci88lv18g3nfucemlqg0', port=6379, db=0)
 
-CACHE_TYPE = 'redis'
-CACHE_REDIS_URL = 'redis://red-ci88lv18g3nfucemlqg0:6379/0'
+CACHE_TYPE = 'RedisCache'
+CACHE_REDIS_URL = 'redis://red-ci88lv18g3nfucemlqg0:6379/'
 CACHE_DEFAULT_TIMEOUT = 300  # Cache timeout in seconds
 
 cache = Cache(config={'CACHE_TYPE': CACHE_TYPE, 'CACHE_REDIS_URL': CACHE_REDIS_URL}, with_jinja2_ext=False)
