@@ -1,25 +1,26 @@
 import os
 from datetime import timedelta
-from flask_caching import Cache
+from flask_caching import Cache, SimpleCache
 from decouple import config
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-import redis
+# import redis
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
-redis_client = redis.Redis(host='redis://red-ci88lv18g3nfucemlqg0', port=6379, db=0)
+# redis_client = redis.Redis(host='redis://red-ci88lv18g3nfucemlqg0', port=6379, db=0)
 
-CACHE_TYPE = 'RedisCache'
-CACHE_REDIS_URL = 'redis://red-ci88lv18g3nfucemlqg0:6379/'
+CACHE_TYPE = 'SimpleCache'
+# CACHE_REDIS_URL = 'redis://red-ci88lv18g3nfucemlqg0:6379/'
 CACHE_DEFAULT_TIMEOUT = 300  # Cache timeout in seconds
 
-cache = Cache(config={'CACHE_TYPE': CACHE_TYPE, 'CACHE_REDIS_URL': CACHE_REDIS_URL}, with_jinja2_ext=False)
+cache = Cache(config={'CACHE_TYPE': CACHE_TYPE}, with_jinja2_ext=False)
 
+simCache = SimpleCache()
 limiter = Limiter(
-  get_remote_address,
-  storage_uri="redis://red-ci88lv18g3nfucemlqg0:6379/0",
-  storage_options={"socket_connect_timeout": 30},
-  strategy="fixed-window"
+    get_remote_address,
+    storage= simCache,
+    storage_options={"socket_connect_timeout": 30},
+    strategy="fixed-window"
 )
 
 
