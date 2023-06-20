@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restx import Api
 from .db import db
-from .config.config import config_dict, cache, limiter
+from .config.config import config_dict, cache, limiter, REDIS_HOST, REDIS_PORT
 from .auth.views import namespace as auth_namespace
 from .resources.urls import url_ns
 
@@ -21,7 +21,7 @@ def create_app(config=config_dict['dev']):
     db.init_app(app)
     cache.init_app(app)
     CORS(app)
-    redis_client = redis.Redis(host='localhost', port=6379, db=0)
+    redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
     
     limiter.init_app(app)
     
