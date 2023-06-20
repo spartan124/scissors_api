@@ -4,7 +4,6 @@ from .db import db
 from .config.config import config_dict, cache, limiter, redis_client
 from .auth.views import namespace as auth_namespace
 from .resources.urls import url_ns
-from .auth import configure_jwt
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_jwt_extended.exceptions import JWTExtendedException
@@ -22,9 +21,6 @@ def create_app(config=config_dict['prod']):
     cache.init_app(app)
     CORS(app)
    
-    configure_redis(redis_client)
-    configure_jwt(redis_client)
-    
     limiter.init_app(app)
     
     migrate = Migrate(app, db)
@@ -67,9 +63,6 @@ def create_app(config=config_dict['prod']):
         
     return app
 
-def configure_redis(redis_client):
-   
-    global redis_client_global
-    redis_client_global = redis_client
+
     
     
