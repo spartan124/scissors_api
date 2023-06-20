@@ -1,14 +1,14 @@
 from flask import Flask
 from flask_restx import Api
 from .db import db
-from .config.config import config_dict, cache, limiter, REDIS_HOST, REDIS_PORT
+from .config.config import config_dict, cache, limiter, redis_client
 from .auth.views import namespace as auth_namespace
 from .resources.urls import url_ns
-
+from .auth import configure_jwt
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_jwt_extended.exceptions import JWTExtendedException
-import redis
+
 from flask_cors import CORS
 
 
@@ -21,7 +21,9 @@ def create_app(config=config_dict['prod']):
     db.init_app(app)
     cache.init_app(app)
     CORS(app)
-    redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
+   
+    configure_redis(redis_client)
+    configure_jwt(redis_client)
     
     limiter.init_app(app)
     
@@ -65,4 +67,9 @@ def create_app(config=config_dict['prod']):
         
     return app
 
-app = create_app()
+def configure_redis(redis_client):
+   
+    global redis_client_global
+    redis_client_global = redis_client
+    
+    

@@ -4,7 +4,7 @@ from flask_caching import Cache
 from decouple import config
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-
+import redis
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -22,6 +22,7 @@ limiter = Limiter(
   strategy="fixed-window"
 )
 
+redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
 class Config:
     SECRET_KEY = config("SECRET_KEY", "secret")

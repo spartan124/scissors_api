@@ -5,11 +5,13 @@ from flask_jwt_extended import (create_access_token, create_refresh_token, get_j
 from flask_restx import Namespace, Resource, abort, fields
 from werkzeug.security import check_password_hash, generate_password_hash
 from ..config.config import cache
-from api.auth import blacklist_token, jwt_required_with_blacklist, jwt_refresh_token_required_with_blacklist
+
+from ..auth import jwt_refresh_token_required_with_blacklist, blacklist_token, jwt_required_with_blacklist
 
 from ..models import User, delete, save, update
 
 namespace = Namespace("auth", description="namespace for Users authentication and Operations")
+
 
 signup_model = namespace.model(
     "UserSignUp",
