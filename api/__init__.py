@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restx import Api
 from .db import db
-from .config.config import config_dict, cache, limiter, redis_client
+from .config.config import config_dict, cache, limiter
 from .auth.views import namespace as auth_namespace
 from .resources.urls import url_ns
 from flask_jwt_extended import JWTManager
@@ -10,7 +10,7 @@ from flask_jwt_extended.exceptions import JWTExtendedException
 import redis
 from flask_cors import CORS
 
-redis_client = redis.Redis()
+
 
 def create_app(config=config_dict['prod']):
     app = Flask(__name__)
