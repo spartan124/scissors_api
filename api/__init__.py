@@ -7,7 +7,7 @@ from .resources.urls import url_ns
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_jwt_extended.exceptions import JWTExtendedException
-import redis
+
 from flask_cors import CORS
 
 
