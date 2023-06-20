@@ -11,8 +11,7 @@ BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 CACHE_TYPE = 'redis'
 CACHE_REDIS_URL = 'redis://red-ci88lv18g3nfucemlqg0:6379/0'
 CACHE_DEFAULT_TIMEOUT = 300  # Cache timeout in seconds
-REDIS_HOST = config('REDIS_HOST')
-REDIS_PORT = config('REDIS_PORT')
+
 cache = Cache(config={'CACHE_TYPE': CACHE_TYPE, 'CACHE_REDIS_URL': CACHE_REDIS_URL}, with_jinja2_ext=False)
 
 limiter = Limiter(
@@ -22,7 +21,7 @@ limiter = Limiter(
   strategy="fixed-window"
 )
 
-redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
+redis_client = redis.Redis(host='redis://red-ci88lv18g3nfucemlqg0', port=6379, db=0)
 
 class Config:
     SECRET_KEY = config("SECRET_KEY", "secret")

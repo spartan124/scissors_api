@@ -7,20 +7,21 @@ from .resources.urls import url_ns
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_jwt_extended.exceptions import JWTExtendedException
-
+import redis
 from flask_cors import CORS
 
-
+redis_client = redis.Redis()
 
 def create_app(config=config_dict['prod']):
     app = Flask(__name__)
     
     app.config.from_object(config)
     
+    
     db.init_app(app)
     cache.init_app(app)
     CORS(app)
-   
+    
     limiter.init_app(app)
     
     migrate = Migrate(app, db)
