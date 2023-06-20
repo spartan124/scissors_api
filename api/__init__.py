@@ -58,6 +58,11 @@ def create_app(config=config_dict['dev']):
             
 
         }
+        
+    @app.before_first_request
+    def create_tables():
+        # Create database tables
+        db.create_all()
     return app
 
 app = create_app()
