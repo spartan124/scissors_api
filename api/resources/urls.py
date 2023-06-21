@@ -17,8 +17,6 @@ from . import generate_short_code, get_geolocation, normalize_url
 
 url_ns = Namespace("", description="URL Shortener API Operations...")
 
-
-
 url_request_model = url_ns.model('URLRequest', {
     'original_url': fields.String(required=True, description='Original URL'),
     'short_code': fields.String(description='Shortened URL'),
@@ -45,6 +43,8 @@ class URLShortener(Resource):
         original_url = request.json.get('original_url')
         
         normalized_url = normalize_url(original_url)
+        base_url = request.host_url
+
         
         if not validators.url(original_url):
             return {'message': 'Invalid URL'}, 400
@@ -53,7 +53,6 @@ class URLShortener(Resource):
         user = get_jwt_identity()
         user_id = user['id']
         
-        base_url = request.host_url
         
         url = Url.query.filter_by(original_url=normalized_url, user_id=user_id).first()
         
@@ -82,10 +81,10 @@ class URLShortener(Resource):
                     )
                 save(url)
             
-            shortened_url = f"{base_url}{short_code}"
+            shortened_url = f"{base_url}{url.short_code}"
             
             
-        return {'shortened_url': shortened_url}, 201
+        return {'shortened_url': shortened_url, 'short_code': url.short_code }, 201
         
     # @url_ns.marshal_with(url_response_model)
     @jwt_required_with_blacklist
@@ -94,14 +93,15 @@ class URLShortener(Resource):
         """Get all shortened urls
 
         Returns:
-            _type_: _description_
+            List: List of all shortened urls
         """
         urls = Url.query.all()
+        
+        base_url = request.host_url
         
         shortened_urls = []
         
         for url in urls:
-            base_url = request.host_url
             shortened_url = f"{base_url}{url.short_code}"
             shortened_urls.append(shortened_url)
         
@@ -123,6 +123,7 @@ class URLRedirect(Resource):
         if url:
             ip_address = request.remote_addr
             geolocation_data = get_geolocation(ip_address)
+            print("This is the geo data ", geolocation_data)
             click = Click(url_id=url.id, click_source=geolocation_data)
             save(click)
             
@@ -136,19 +137,40 @@ class URLRedirect(Resource):
     
     
 @url_ns.route("/shortened/<short_code>")   
-class OriginalUrl(Resource):
+class ShortUrl(Resource):
     @jwt_required_with_blacklist
     @cache.cached(timeout=60)
     def get(self, short_code):
+        """
+        Get shortened url using the shortcode
+
+        Args:
+            short_code (string): randomly generated shortcode
+
+        Returns:
+            string: shortened url
+        """
         url = Url.query.filter_by(short_code=short_code).first()
-        
+        base_url = request.host_url
+
         if not url:
             abort(404, message="Invalid shortcode")
         
-        original_url = url.original_url
-        return original_url, 200
+        shortened_url = f"{base_url}{url.short_code}"
+
+        return shortened_url, 200
+    
     @jwt_required_with_blacklist
     def delete(self, short_code):
+        """
+        Delete a url from data base using the shortcode
+
+        Args:
+            short_code (string): randomly generated shortcode
+
+        Returns:
+            string: success message or error message
+        """
         user = get_jwt_identity()
         user_id = user['id']
         
@@ -163,12 +185,21 @@ class GenerateQrCode(Resource):
     @jwt_required_with_blacklist
     @cache.cached(timeout=60)
     def get(self, short_code):
+        """
+        Get a shortened url QRCode using the shortcode
+
+        Args:
+            short_code (string): randomly generated shortcode
+
+        Returns:
+            img/png : Image data of the requested url shortcode
+        """
         
         url = Url.query.filter_by(short_code=short_code).first()
-        
         base_url = request.host_url
-        shortened_url = f"{base_url}{short_code}"
+
         if url:
+            shortened_url = f"{base_url}{short_code}"
             qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -177,7 +208,7 @@ class GenerateQrCode(Resource):
             )
             qr.add_data(shortened_url)
             qr.make(fit=True)
-            qr_image = qr.make_image(fill_color="black", back_color="white")
+            qr_image = qr.make_image(fill_color="seagreen", back_color="white")
 
             # Save QR code image to a BytesIO object
             qr_buffer = BytesIO()
@@ -196,6 +227,12 @@ class ShortUrlAnalytics(Resource):
     def get(self, short_code):
         """
         Get analytics for shortened url
+
+        Args:
+            short_code (string): randomly generated shortcode
+
+        Returns:
+            img/png : Image data showing analytics.
         """
         user = get_jwt_identity()
         user_id = user["id"]
@@ -225,9 +262,9 @@ class ShortUrlAnalytics(Resource):
             plt.savefig(image_buffer, format='png')
             plt.close()
             image_buffer.seek(0)
+            
             return send_file(image_buffer, mimetype='image/png')
-
-           
+            
         return {"message": "User is not authorized to view this Url's analytics."}, 404
     
 @url_ns.route('/history')    
@@ -236,7 +273,10 @@ class UrlHistory(Resource):
     @cache.cached(timeout=60)
     def get(self):
         """
-        Get a specific user's url link history
+        Get all Urls generated by a Specific User
+
+        Returns:
+            dict: Returns a dict object
         """
         user = get_jwt_identity()
         user_id = user['id']
@@ -249,7 +289,6 @@ class UrlHistory(Resource):
             history.append({
                 'short_code': url.short_code,
                 'shortened_url': f"{request.host_url}{url.short_code}"
-                # 'original_url': url.original_url
             })
 
         history_dict = {item['short_code']: item['shortened_url'] for item in history}
