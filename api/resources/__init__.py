@@ -23,7 +23,10 @@ def normalize_url(url):
     return normalized_url
 
 def get_geolocation(ip_address):
-    location = simple_geoip.get_geoip_data(ip_address)
-    region = location.get('region')
-    country = location.get('country')
-    return region, country
+    geo_location = simple_geoip.get_geoip_data(ip_address)
+    geo_data = geo_location.get('location', {})
+    region = geo_data.get('region', '')
+    country = geo_data.get('country', '')
+    click_source = f"{region}, {country}" if region and country else ""
+
+    return click_source
