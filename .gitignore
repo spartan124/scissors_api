@@ -3,6 +3,7 @@ henvy
 __pycache__
 templates
 migrations
-
+*.sqlite3
+*.rdb
 project_tree.sh
 
