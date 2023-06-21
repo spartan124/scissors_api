@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import api from './api';
 import QRCode from 'react-qr-code';
 
-function UrlShortenerForm() {
+const UrlShortenerForm = () => {
   const [original_url, setOriginalUrl] = useState('');
   const [short_code, setCustomShortcode] = useState('');
   const [shortenedUrl, setShortenedUrl] = useState('');
@@ -36,26 +36,27 @@ function UrlShortenerForm() {
   };
 
   return (
-    <div>
-      <h2>URL Shortener</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Original URL:
+      <div className='wrapper text-center'>
+          
+          <form onSubmit={handleSubmit}>
+          <div className='inputField'>
+          <h2>Shorten URL</h2>        
+        <div className="mb-3">
           <input
-            type="text"
+            type="url"
             value={original_url}
             onChange={(e) => setOriginalUrl(e.target.value)}
-          />
-        </label>
-        <label>
-          Custom Shortcode:
+            className="form-control" id="url" placeholder="Paste url to shorten"/>
+        </div>
+        <div className="mb-3">
           <input
-            type="text"
+            type="custom shortcode"
             value={short_code}
             onChange={(e) => setCustomShortcode(e.target.value)}
-          />
-        </label>
-        <button type="submit">Shorten URL</button>
+            className="form-control" id="Custom shortcode" placeholder="Custom shortcode"/>
+        </div>
+        <button type="button" className="btn btn-primary" onClick={handleSubmit}>Shorten</button>
+        </div>
       </form>
       {shortenedUrl && (
         <div>
