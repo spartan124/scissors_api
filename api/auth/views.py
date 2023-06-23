@@ -10,7 +10,7 @@ from ..auth import jwt_refresh_token_required_with_blacklist, blacklist_token, j
 
 from ..models import User, delete, save, update
 
-namespace = Namespace("auth", description="namespace for Users authentication and Operations")
+namespace = Namespace("Auth Ops", description="namespace for Users authentication and Operations", path='/auth')
 
 
 signup_model = namespace.model(
@@ -77,7 +77,14 @@ class Signup(Resource):
 @namespace.route('/login')
 class Login(Resource):
     @namespace.expect(login_model)
-    @namespace.doc(description="Login a teacher, an admin or a student account and generate access & refresh tokens.")
+    @namespace.doc(
+        description="Sign in a user and generate access & refresh tokens.",
+        
+        responses={
+            201: 'User is logged in and access and refresh tokens generated',
+            403: 'Invalid login credentials.'
+        }
+    )
     def post(self):
         """Generate JWT access and refresh tokens
         """
