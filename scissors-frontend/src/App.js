@@ -1,7 +1,5 @@
 import React from 'react';
 import UrlShortenerForm from './UrlShortenerForm';
-
-import NavBar from './NavigationBar';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -10,6 +8,8 @@ import HistoryPage from './History';
 import Login from './Login';
 import AnalyticsPage from './Analytics'
 import QrCodePage from './QrCode';
+import Footer from './Footer';
+import NavBar from './NavigationBar';
 
 function App() {
   
@@ -25,6 +25,7 @@ function App() {
         <Route path="/:shortCode/qrcode" element={<QrCodePage />} />
        
       </Routes>
+      <Footer />
     </Router>
 
 

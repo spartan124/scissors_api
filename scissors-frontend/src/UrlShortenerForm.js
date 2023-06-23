@@ -36,7 +36,7 @@ const UrlShortenerForm = () => {
   };
 
   return (
-      <div className='wrapper text-center'>
+      <div className='container mt-5 text-center'>
           
           <form onSubmit={handleSubmit}>
           <div className='inputField'>
@@ -55,24 +55,25 @@ const UrlShortenerForm = () => {
             onChange={(e) => setCustomShortcode(e.target.value)}
             className="form-control" id="Custom shortcode" placeholder="Custom shortcode"/>
         </div>
-        <button type="button" className="btn btn-primary" onClick={handleSubmit}>Shorten</button>
+        
+        <button type="button" className="btn btn-outline-primary" onClick={handleSubmit}>Shorten</button>
         </div>
       </form>
       {shortenedUrl && (
-        <div>
-            <p>
-                Shortened URL:
-                <a href={shortenedUrl} target='_blank' rel='noopener noreferrer'>
-                    {shortenedUrl}
-                </a>
-            </p>
-            
-            <button onClick={handleCopyClick}>Copy</button>
-            
-            <div>
+        <div className='container'>
+        
+        <div className="input-group">
+            <input type="text" class="form-control col-3" id="myGeneratedLink" value={shortenedUrl} readonly />
+            <div className="input-group-append">
+              <button className="btn btn-outline-secondary" type="button" onClick={handleCopyClick}>Copy</button>
+              <div>
             <QRCode value={shortenedUrl} fgColor="seagreen"/>
+
             </div>
-        </div>
+            </div> 
+              </div>
+    
+      </div>
         
        
       )}

@@ -47,7 +47,7 @@ function HistoryPage() {
 
 
   return (
-    <div>
+    <div className='container mt-5 text-white wrapper'>
       <h1>Shortened URLs History</h1>
       {Object.entries(history).length > 0 ? (
         <div>

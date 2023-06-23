@@ -30,15 +30,25 @@ function AnalyticsPage() {
   }, [shortCode]);
 
   return (
-    <div>
-      <h1>Analytics for Shortened URL: {shortCode}</h1>
+    <section>
+    <div className='container mt-5 text-white wrapper'>
+      <div className='row'>
+        <div className='col-12 col-md-3'>
+        </div>
+      <div className='image-container col-12 text-center col-md-6'>
+      <h2>Analytics for Shortened URL: {shortCode}</h2>
       {imageSrc ? (
         <img src={imageSrc} alt="Clicks per Location" />
       ) : (
         <p>Loading analytics data...</p>
       )}
       {error && <p>{error}</p>}
+      </div>
+      <div className='col-12 col-md-3'>
+        </div>
     </div>
+   </div>
+   </section>
   );
 }
 
