@@ -38,7 +38,7 @@ def create_app(config=config_dict['prod']):
     
     api = Api(app,
               title='Scissors API',
-              description='A url shortening services API to explore the Nigerian region',
+              description='A url shortening services API to shorten, redirect and view shortened url analytics.',
               authorizations=authorizations,
               security='Bearer Auth'
             )
