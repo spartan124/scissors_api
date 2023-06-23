@@ -45,7 +45,7 @@ class TestConfig(Config):
 class ProdConfig(Config):
     DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ECHO = True
+    SQLALCHEMY_ECHO = False
     SQLALCHEMY_DATABASE_URI = config('POSTGRESQL')
 
 

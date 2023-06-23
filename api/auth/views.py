@@ -137,4 +137,5 @@ class UserData(Resource):
         email = user['email']
         userdata = User.query.filter_by(email=email).first()
         if userdata is not None:
-            return {'username': userdata.username}
+            return {'username': userdata.username}, 200
+        return {'message': 'User not found'}, 404

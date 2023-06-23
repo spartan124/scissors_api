@@ -13,9 +13,12 @@ import requests
 import validators
 import matplotlib.pyplot as plt
 import io
+import matplotlib
 from . import generate_short_code, get_geolocation, normalize_url
 
-url_ns = Namespace("", description="URL Shortener API Operations...")
+matplotlib.use('Agg')
+
+url_ns = Namespace("Url OPs", description="URL Shortener API Operations...", path="/")
 
 url_request_model = url_ns.model('URLRequest', {
     'original_url': fields.String(required=True, description='Original URL'),
@@ -31,10 +34,37 @@ url_response_model = url_ns.model('URLResponse', {
 })
 
 
-@limiter.limit("10/minute")
+@limiter.limit("5/second")
 @url_ns.route('/shorten')
 class URLShortener(Resource):
     @url_ns.expect(url_request_model, validate=True)
+    @url_ns.doc(
+        params={
+            'original_url': 'The original URL to be shortened',
+            'short_code': 'Optional custom short code for the URL'
+        },
+        responses={
+            200: 'Ok',
+            201: 'Success',
+            400: 'Invalid URL',
+            401: 'Unauthorized',
+            500: 'Server error'
+        },
+        examples={
+            'Example 1': {
+                'summary': 'Shorten a URL',
+                'description': 'Shorten the given URL and return the shortened URL.',
+                'request': {
+                    'original_url': 'https://example.com',
+                    'short_code': 'custom-short-code'
+                },
+                'response': {
+                    'shortened_url': 'http://localhost:5000/abcd',
+                    'short_code': 'abcd'
+                }
+            }
+        }
+    )
     @jwt_required_with_blacklist
     def post(self):
         """
@@ -46,7 +76,7 @@ class URLShortener(Resource):
         base_url = request.host_url
 
         
-        if not validators.url(original_url):
+        if not validators.url(normalized_url):
             return {'message': 'Invalid URL'}, 400
         
         short_code = request.json.get('short_code')
@@ -85,32 +115,27 @@ class URLShortener(Resource):
             
             
         return {'shortened_url': shortened_url, 'short_code': url.short_code }, 201
-        
-    # @url_ns.marshal_with(url_response_model)
-    @jwt_required_with_blacklist
-    @cache.cached(timeout=60)
-    def get(self):
-        """Get all shortened urls
-
-        Returns:
-            List: List of all shortened urls
-        """
-        urls = Url.query.all()
-        
-        base_url = request.host_url
-        
-        shortened_urls = []
-        
-        for url in urls:
-            shortened_url = f"{base_url}{url.short_code}"
-            shortened_urls.append(shortened_url)
-        
-        return {'shortened url': shortened_urls}
 
 @limiter.limit("5/second")    
 @url_ns.route('/<short_code>')
 class URLRedirect(Resource):  
-    @cache.cached(timeout=60)
+    @cache.cached(timeout=30)
+    @url_ns.doc(responses={
+        302: 'Redirect to the original URL',
+        404: 'URL not found'
+    },
+        params={
+        'short_code': 'Shortened URL'
+    },
+        examples={
+        'Example 1': {
+            'summary': 'Redirect to original URL',
+            'description': 'Redirect to the original URL for the given short code.',
+            'response': 'Redirect to https://example.com',
+        }
+    }
+    )
+   
     def get(self, short_code):
         """
         Redirect to the original url for the given short code.
@@ -135,20 +160,30 @@ class URLRedirect(Resource):
         
         return {"message": "Url not found"}, 404
     
-    
+   
+@limiter.limit("5/second")
 @url_ns.route("/shortened/<short_code>")   
 class ShortUrl(Resource):
+    @url_ns.doc(responses={
+        200: 'Shortened URL',
+        404: 'Invalid shortcode'
+    },
+        params={
+        'short_code': 'Url shortcode'
+    },
+        examples={
+        'Example 1': {
+            'summary': 'Get shortened URL',
+            'description': 'Get the shortened URL using the shortcode.',
+            'response': 'https://example.com/abcd',
+        }
+    }
+    )
     @jwt_required_with_blacklist
-    @cache.cached(timeout=60)
+    @cache.cached(timeout=30)   
     def get(self, short_code):
         """
         Get shortened url using the shortcode
-
-        Args:
-            short_code (string): randomly generated shortcode
-
-        Returns:
-            string: shortened url
         """
         url = Url.query.filter_by(short_code=short_code).first()
         base_url = request.host_url
@@ -160,17 +195,19 @@ class ShortUrl(Resource):
 
         return shortened_url, 200
     
+    
+    @url_ns.doc(description="Delete a url from the database using the shortcode",
+        params={
+        'short_code': 'Target Url shortcode'
+        },
+        responses={
+        200: 'Success message',
+        404: 'Url not found'
+    }              
+    )
     @jwt_required_with_blacklist
     def delete(self, short_code):
-        """
-        Delete a url from data base using the shortcode
-
-        Args:
-            short_code (string): randomly generated shortcode
-
-        Returns:
-            string: success message or error message
-        """
+        
         user = get_jwt_identity()
         user_id = user['id']
         
@@ -180,19 +217,24 @@ class ShortUrl(Resource):
             return {"message": "Url successfully deleted"}
         abort(404, message="Url not found")
 
+@limiter.limit("5/second")
 @url_ns.route("/<short_code>/qrcode")
 class GenerateQrCode(Resource):
+    @url_ns.doc(description="Generate a QR code for a shortened URL using the shortcode", 
+        params={
+        'short_code': 'Target url shortcode'
+        },
+        responses={
+        200: 'QR code image',
+        404: 'URL not found'
+    })
     @jwt_required_with_blacklist
     @cache.cached(timeout=60)
     def get(self, short_code):
         """
-        Get a shortened url QRCode using the shortcode
-
-        Args:
-            short_code (string): randomly generated shortcode
-
+        Generate a QR code for a shortened URL using the shortcode
         Returns:
-            img/png : Image data of the requested url shortcode
+            Response: QR code image in PNG format
         """
         
         url = Url.query.filter_by(short_code=short_code).first()
@@ -219,17 +261,24 @@ class GenerateQrCode(Resource):
             response.headers.set('Content-Disposition', 'attachment', filename='qrcode.png')
             return response
         
-    
+@limiter.limit("5/second")   
 @url_ns.route('/analytics/<short_code>')
 class ShortUrlAnalytics(Resource):
+    @url_ns.doc(
+        params={
+        'short_code': 'Randomly generated shortcode'
+    },
+        responses={
+        200: 'Analytics image',
+        404: 'URL or user not found'
+    },
+        description="Get analytics for a shortened URL using the shortcode"
+    )
     @jwt_required_with_blacklist
     @cache.cached(timeout=60)
     def get(self, short_code):
         """
         Get analytics for shortened url
-
-        Args:
-            short_code (string): randomly generated shortcode
 
         Returns:
             img/png : Image data showing analytics.
@@ -266,18 +315,19 @@ class ShortUrlAnalytics(Resource):
             return send_file(image_buffer, mimetype='image/png')
             
         return {"message": "User is not authorized to view this Url's analytics."}, 404
-    
+
+@limiter.limit("5/second")    
 @url_ns.route('/history')    
 class UrlHistory(Resource):
+    @url_ns.doc(responses={
+        200: 'URLs history as a dictionary',
+    },
+        description="Get all URLs generated by a specific user"
+    )
     @jwt_required_with_blacklist
     @cache.cached(timeout=60)
     def get(self):
-        """
-        Get all Urls generated by a Specific User
-
-        Returns:
-            dict: Returns a dict object
-        """
+        
         user = get_jwt_identity()
         user_id = user['id']
         
