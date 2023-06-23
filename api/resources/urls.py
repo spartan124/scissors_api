@@ -148,7 +148,6 @@ class URLRedirect(Resource):
         if url:
             ip_address = request.remote_addr
             geolocation_data = get_geolocation(ip_address)
-            print("This is the geo data ", geolocation_data)
             click = Click(url_id=url.id, click_source=geolocation_data)
             save(click)
             
