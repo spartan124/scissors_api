@@ -36,7 +36,7 @@ const UrlShortenerForm = () => {
   };
 
   return (
-      <div className='container mt-5 text-center'>
+      <div className='container wrapper mt-5 text-center'>
           
           <form onSubmit={handleSubmit}>
           <div className='inputField'>
@@ -60,18 +60,20 @@ const UrlShortenerForm = () => {
         </div>
       </form>
       {shortenedUrl && (
-        <div className='container'>
-        
-        <div className="input-group">
-            <input type="text" class="form-control col-3" id="myGeneratedLink" value={shortenedUrl} readonly />
+        <div className='col-12' >
+        <div className="copy-box">
+            <input type="text" className="copy-input form-control col-3" id="myGeneratedLink" value={shortenedUrl} readonly />
             <div className="input-group-append">
-              <button className="btn btn-outline-secondary" type="button" onClick={handleCopyClick}>Copy</button>
-              <div>
-            <QRCode value={shortenedUrl} fgColor="seagreen"/>
-
-            </div>
+              <button className="btn btn-outline-primary" type="button" onClick={handleCopyClick}>Copy</button>
             </div> 
-              </div>
+          </div> 
+        <div className='wrapper'>
+        <QRCode value={shortenedUrl} fgColor="seagreen"/>
+        <br />
+        <div className='wrapper'>
+        <p>Scan to copy</p>
+        </div>
+        </div>
     
       </div>
         
