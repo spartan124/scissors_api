@@ -27,7 +27,21 @@ body{
   height: auto;
   margin: 5px;
 }
-
+.copy-box {
+  display: flex;
+  align-items: center;
+  width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+.copy-input {
+  flex: 1;
+  border: none;
+  background-color: transparent;
+  outline: none;
+}
 footer{
   background-color: #1d2547;
 }
