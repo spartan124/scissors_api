@@ -3,6 +3,7 @@ import unittest
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_jwt_extended import create_access_token, create_refresh_token
 from api import create_app
+from api.models.urls import Click
 from ..config.config import config_dict
 from ..db import db
 from ..models import User, Url, save
@@ -262,3 +263,37 @@ class UserTestCase(unittest.TestCase):
         
         assert qr_response.status_code == 200
         assert qr_response.headers['Content-Type'] == 'application/json'
+
+    def test_url_analytics(self):
+        user = create_user()
+        save(user)
+        
+        email = 'tadmin@test.com'
+        password = 'password'
+        password_hash = generate_password_hash(password)
+
+        data = {
+            'email': email,
+            'password': password
+        }
+
+        # Perform the login request to get the access token and refresh token
+        login_response = self.client.post('/auth/login', json=data)
+        access_token = login_response.json['access_token']        
+        headers = {
+            'Authorization': f'Bearer {access_token}'
+        }
+        url = Url(original_url='https://example.com', short_code='abcd1234', user_id=user.id)
+        save(url)
+        
+        # Create some click data for the URL
+        click1 = Click(url_id=url.id, click_source='Location1')
+        click2 = Click(url_id=url.id, click_source='Location2')
+        save(click1)
+        save(click2)
+        # Perform the GET request to retrieve the analytics
+
+        response = self.client.get('/analytics/abcd1234', headers=headers)
+        
+        assert response.status_code == 200
+        assert response.headers['Content-Type'] == 'image/png'
