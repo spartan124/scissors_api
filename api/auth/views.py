@@ -108,7 +108,7 @@ class Login(Resource):
             return response, 201
         
         else:
-            abort(403, message="Invalid login credentials. Check credentials and try again.")
+            abort(401, message="Invalid login credentials. Check credentials and try again.")
         
 @namespace.route('/refresh')
 class Refresh(Resource):

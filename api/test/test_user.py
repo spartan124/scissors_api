@@ -71,6 +71,25 @@ class UserTestCase(unittest.TestCase):
         
         # Verify the password using the password hash
         assert check_password_hash(user.password_hash, password)
+    
+    def test_invalid_login(self):
+        user = create_user()
+        save(user)
+        
+        email = 'tadmin@test.com'
+        password = 'incorrect_password'  # Use an incorrect password
+        password_hash = generate_password_hash(password)
+        
+        data = {
+            'email': email,
+            'password': password
+        }
+        
+        response = self.client.post('auth/login', json=data)
+        
+        assert response.status_code == 401
+        assert response.json['message'] == 'Invalid login credentials. Check credentials and try again.'
+
         
     def test_refresh_token(self):
         user = create_user()
