@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthService from './authService';
+import { toast } from 'react-toastify'
 
 const Navbar = () => {
     const [currentUser, setCurrentUser] = useState('');
@@ -12,7 +13,7 @@ const Navbar = () => {
                 const user = AuthService.getCurrentUser();
                 setCurrentUser(user);
             } catch (error) {
-                console.error("Failed to fetch user:", error);
+                toast.error("Failed to fetch user")
                 
             }
         };
@@ -48,7 +49,7 @@ const Navbar = () => {
       {currentUser ? (
           <>
             <li>
-              <p><span>Welcome, {}!</span></p>
+              <p className='text-white'><span>Welcome, {}!</span></p>
             </li>
             <li>
               <button onClick={handleLogout}>Logout</button>
