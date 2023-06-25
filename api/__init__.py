@@ -43,9 +43,9 @@ def create_app(config=config_dict['prod']):
               security='Bearer Auth'
             )
     
-    @api.errorhandler(JWTExtendedException)
-    def handle_jwt_exceptions(error):
-        return {'message': str(error)}, getattr(error, 'code', 401)
+    # @api.errorhandler(JWTExtendedException)
+    # def handle_jwt_exceptions(error):
+    #     return {'message': str(error)}, getattr(error, 'code', 401)
     
     api.add_namespace(auth_namespace)
     api.add_namespace(url_ns)
