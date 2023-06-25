@@ -80,6 +80,10 @@ class URLShortener(Resource):
             return {'message': 'Invalid URL'}, 400
         
         short_code = request.json.get('short_code')
+        check_shortcode = Url.query.filter_by(short_code=short_code).first()
+        if check_shortcode:
+            abort(409, message="Custom shortcode already exists")
+            
         user = get_jwt_identity()
         user_id = user['id']
         
