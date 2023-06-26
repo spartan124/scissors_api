@@ -319,7 +319,7 @@ class ShortUrlAnalytics(Resource):
             
         return {"message": "User is not authorized to view this Url's analytics."}, 404
 
-@limiter.limit("5/second")    
+@limiter.limit("50/second")    
 @url_ns.route('/history')    
 class UrlHistory(Resource):
     @url_ns.doc(responses={
