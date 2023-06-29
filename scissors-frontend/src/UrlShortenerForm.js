@@ -5,7 +5,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { toast } from "react-toastify";
-import "./test.css";
+
 
 const UrlShortenerForm = () => {
   const [original_url, setOriginalUrl] = useState("");
@@ -44,9 +44,39 @@ const UrlShortenerForm = () => {
   };
 
   return (
-    
-    <Container className="wrapper text-center justify-content-center">
-      <Row>
+
+    <Container className="wrapper text-center">
+      {shortenedUrl ? (
+        <Row>
+        
+          <Col>
+          <div className= "col-12 qrx">
+              <QRCode value={shortenedUrl} fgColor="seagreen" />
+              <p class="mt-2">Scan to copy</p>
+              <div className="copy-box">
+                <input
+                  type="text"
+                  className="copy-input form-control col-3"
+                  id="myGeneratedLink"
+                  value={shortenedUrl}
+                  readOnly
+                />
+                <div className="input-group-append">
+                  <button
+                    className="btn btn-outline-primary"
+                    type="button"
+                    onClick={handleCopyClick}
+                  >
+                    Copy
+                  </button>
+                 
+                </div>
+              </div>
+            </div>
+          </Col>
+          </Row>
+      ):(
+        <Row>
         {/* <Col className='col-2'></Col>  */}
         <Col className="">
           <form onSubmit={handleSubmit}>
@@ -82,77 +112,11 @@ const UrlShortenerForm = () => {
               </button>
             </div>
           </form>
-          {/* </Col>
-      <Col> */}
-
-          {shortenedUrl && (
-            <div className={shortenedUrl ? "col-12 qrx" : "sh-false"}>
-              <QRCode value={shortenedUrl} fgColor="seagreen" />
-              <p class="mt-2">Scan to copy</p>
-              <div className="copy-box">
-                <input
-                  type="text"
-                  className="copy-input form-control col-3"
-                  id="myGeneratedLink"
-                  value={shortenedUrl}
-                  readOnly
-                />
-                <div className="input-group-append">
-                  <button
-                    className="btn btn-outline-primary"
-                    type="button"
-                    onClick={handleCopyClick}
-                  >
-                    Copy
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </Col>
+          </Col>
       </Row>
-    </Container>
-
-    // <div className="main-container">
-    //   <div className="left-url-shortener">
-    //     <form onSubmit={handleSubmit}>
-    //       <div className="">
-    //         <h2 className="url-title">Shorten URL</h2>
-    //         <div className="">
-    //           <input
-    //             type="url"
-    //             value={original_url}
-    //             onChange={(e) => setOriginalUrl(e.target.value)}
-    //             className="input-control"
-    //             id="url"
-    //             placeholder="Paste url to shorten"
-    //           />
-    //         </div>
-    //         <div className="">
-    //           <input
-    //             type="custom shortcode"
-    //             value={short_code}
-    //             onChange={(e) => setCustomShortcode(e.target.value)}
-    //             className="input-control"
-    //             id="Custom shortcode"
-    //             placeholder="Custom shortcode"
-    //           />
-    //         </div>
-    //         <div className="btn-box">
-    //           <button
-    //             type="button"
-    //             className="btn urlxbut btn-outline-primary"
-    //             onClick={handleSubmit}
-    //           >
-    //             Shorten
-    //           </button>
-    //         </div>
-    //       </div>
-    //     </form>
-    //   </div>
-    //   <div className="right-barcode">right</div>
-    // </div>
-  );
+      )}
+      </Container>
+  )
 };
 
 export default UrlShortenerForm;
