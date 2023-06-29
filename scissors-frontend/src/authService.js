@@ -45,7 +45,7 @@ class AuthService {
     if (accessToken) {
       return api.get('/auth/user')
         .then((response) => {
-          return response.data;
+          return response.data['username'];
         })
         .catch((error) => {
           console.error('Failed to get user data:', error);

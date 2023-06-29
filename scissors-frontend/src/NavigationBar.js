@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthService from './authService';
 import { toast } from 'react-toastify'
+import myLogo from './images/default-monochrome.svg'
 
 const Navbar = () => {
     const [currentUser, setCurrentUser] = useState('');
@@ -30,13 +31,16 @@ const Navbar = () => {
     return (
       <nav className="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
+        <img src={myLogo} alt='' width="auto" height="20px"></img>
             <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
             </button>
+          
+
             <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <Link to="/shorten" className="nav-link">Home</Link>            
+                <Link to="/" className="nav-link">Home</Link>            
               </li>
                 <li class="nav-item">
                 <Link to="/shorten" className="nav-link">Shorten URL</Link>
@@ -49,7 +53,7 @@ const Navbar = () => {
       {currentUser ? (
           <>
             <li>
-              <p className='text-white'><span>Welcome, {}!</span></p>
+              <p className='text-white'><span>Welcome, {currentUser.user}!</span></p>
             </li>
             <li>
               <button onClick={handleLogout}>Logout</button>
