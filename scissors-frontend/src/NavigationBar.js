@@ -60,12 +60,18 @@ const Navbar = () => {
             </li>
           </>
         ) : ( 
+          <>
+            <li>
+            <p className='text-white text-center'> Don't have an account? 
+            <Link to="/register">Register</Link>
+            </p>
+            </li>
           <li>
              <button className='btn btn-primary'>
             <Link to="/login" className="nav-link">Login</Link>
             </button>
           </li>
-          
+          </>
         )}
         
         </div>

@@ -46,9 +46,6 @@ const UrlShortenerForm = () => {
     <div className="wrapper text-center">
       {shortenedUrl ? (
         <div>
-        
-          
-          
               <QRCode value={shortenedUrl} fgColor="seagreen" />
               <p class="mt-2">Scan to copy</p>
               <div className="copy-box">
