@@ -56,12 +56,12 @@ const Navbar = () => {
               <p className='text-white'><span>Welcome, {currentUser.user}!</span></p>
             </li>
             <li>
-              <button onClick={handleLogout}>Logout</button>
+              <button className='btn btn-danger' onClick={handleLogout}>Logout</button>
             </li>
           </>
         ) : ( 
           <li>
-             <button>
+             <button className='btn btn-primary'>
             <Link to="/login" className="nav-link">Login</Link>
             </button>
           </li>

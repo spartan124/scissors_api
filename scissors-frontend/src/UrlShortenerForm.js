@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import api from "./api";
 import QRCode from "react-qr-code";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+
 import { toast } from "react-toastify";
 
 
@@ -45,12 +43,12 @@ const UrlShortenerForm = () => {
 
   return (
 
-    <Container className="wrapper text-center">
+    <div className="wrapper text-center">
       {shortenedUrl ? (
-        <Row>
+        <div>
         
-          <Col>
-          <div className= "col-12 qrx">
+          
+          
               <QRCode value={shortenedUrl} fgColor="seagreen" />
               <p class="mt-2">Scan to copy</p>
               <div className="copy-box">
@@ -72,13 +70,13 @@ const UrlShortenerForm = () => {
                  
                 </div>
               </div>
-            </div>
-          </Col>
-          </Row>
+         
+          </div>
+        
       ):(
-        <Row>
-        {/* <Col className='col-2'></Col>  */}
-        <Col className="">
+        
+        
+        <div className="form-width-x">
           <form onSubmit={handleSubmit}>
             <div className="inputField">
               <h2>Shorten URL</h2>
@@ -112,10 +110,9 @@ const UrlShortenerForm = () => {
               </button>
             </div>
           </form>
-          </Col>
-      </Row>
+          </div>
       )}
-      </Container>
+      </div>
   )
 };
 

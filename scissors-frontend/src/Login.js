@@ -28,9 +28,6 @@ const Login = () => {
 
   return (
     <div className='wrapper text-center'>
-      <div className='formImg'>
-
-      </div>
       
       <form onSubmit={handleLogin}>
       <div className='inputField'>
