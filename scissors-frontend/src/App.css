@@ -2,8 +2,8 @@
 
 body{
   display: flexbox;
-  padding: 0;
-  margin: 0;
+  padding: 1rem;
+  margin: 1.5rem;
   box-sizing: border-box;
   overflow-x: hidden;
   font-family: 'Crimson Text', serif;
@@ -11,10 +11,15 @@ body{
   
 }
 .form-width-x{
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
+
+  width: auto;
+  background-color: #fff;
+  height: auto;
+  padding: 3rem;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border-color: aquamarine;
+  
 }
 
 /* 
@@ -63,7 +68,7 @@ footer{
 
  form{
   
-  width: 35%;
+  width: auto;
   background-color: #fff;
   height: auto;
   padding: 3rem;
