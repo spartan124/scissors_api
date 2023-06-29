@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+
+
+
+.quotes-container{
+  display: flexbox;
+  font-family: Crimson;
+}
+#quote-box {
+  
+  background: violet;
+  width: 40rem;
+  margin: 1rem auto;
+  padding: 3rem;
+  border-radius: 15px;
+}
+
+#text {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+#author {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 1.2rem;
+}
+
+#buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+
+#new-quote {
+  background: #0059ff;
+  border: none;
+  color: #fff;
+  padding: .7rem 1rem;
+  font-size: .9rem;
+  font-weight: bold;
+  border-radius: 20px;
+  outline: none;
+  cursor: pointer;
+}
+
+#new-quote:hover {
+  opacity: 0.9;
+}
