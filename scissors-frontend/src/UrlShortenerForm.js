@@ -4,7 +4,6 @@ import QRCode from "react-qr-code";
 
 import { toast } from "react-toastify";
 
-
 const UrlShortenerForm = () => {
   const [original_url, setOriginalUrl] = useState("");
   const [short_code, setCustomShortcode] = useState("");
@@ -42,37 +41,31 @@ const UrlShortenerForm = () => {
   };
 
   return (
-
     <div className="wrapper text-center">
       {shortenedUrl ? (
         <div>
-              <QRCode value={shortenedUrl} fgColor="seagreen" />
-              <p class="mt-2">Scan to copy</p>
-              <div className="copy-box">
-                <input
-                  type="text"
-                  className="copy-input form-control col-3"
-                  id="myGeneratedLink"
-                  value={shortenedUrl}
-                  readOnly
-                />
-                <div className="input-group-append">
-                  <button
-                    className="btn btn-outline-primary"
-                    type="button"
-                    onClick={handleCopyClick}
-                  >
-                    Copy
-                  </button>
-                 
-                </div>
-              </div>
-         
+          <QRCode value={shortenedUrl} fgColor="seagreen" />
+          <p class="mt-2">Scan to copy</p>
+          <div className="copy-box">
+            <input
+              type="text"
+              className="copy-input form-control col-3"
+              id="myGeneratedLink"
+              value={shortenedUrl}
+              readOnly
+            />
+            <div className="input-group-append">
+              <button
+                className="btn btn-outline-primary"
+                type="button"
+                onClick={handleCopyClick}
+              >
+                Copy
+              </button>
+            </div>
           </div>
-        
-      ):(
-        
-        
+        </div>
+      ) : (
         <div className="form-width-x">
           <form onSubmit={handleSubmit}>
             <div className="inputField">
@@ -107,10 +100,10 @@ const UrlShortenerForm = () => {
               </button>
             </div>
           </form>
-          </div>
+        </div>
       )}
-      </div>
-  )
+    </div>
+  );
 };
 
 export default UrlShortenerForm;

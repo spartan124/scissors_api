@@ -1,17 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Text&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Crimson+Text&display=swap");
 
-body{
+body {
   display: flexbox;
   padding: 0;
   margin: 0;
   box-sizing: border-box;
   overflow-x: hidden;
-  font-family: 'Crimson Text', serif;
-  background-color: linear-gradient(125deg, rgb(237, 243, 255) 20%, rgb(156, 164, 176) 50%, rgb(166, 162, 214) 90%), rgb(140, 163, 207)
-  
+  font-family: "Crimson Text", serif;
+  background-color: linear-gradient(
+      125deg,
+      rgb(237, 243, 255) 20%,
+      rgb(156, 164, 176) 50%,
+      rgb(166, 162, 214) 90%
+    ),
+    rgb(140, 163, 207);
 }
-.form-width-x{
-
+.form-width-x {
   width: auto;
   background-color: #fff;
   height: auto;
@@ -19,7 +23,6 @@ body{
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
   border-color: aquamarine;
-  
 }
 
 /* 
@@ -29,7 +32,7 @@ body{
   flex-direction: column;
   align-items: center;
 } */
-.wrapper{
+.wrapper {
   display: flex;
   justify-content: center;
   margin-top: 3rem;
@@ -62,12 +65,11 @@ body{
   background-color: transparent;
   outline: none;
 }
-footer{
+footer {
   background-color: #1d2547;
 }
 
- form{
-  
+form {
   width: auto;
   background-color: #fff;
   height: auto;
@@ -75,13 +77,11 @@ footer{
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
   border-color: aquamarine;
-  
-} 
- form h2{
-  font-family: 'Crimson Text', serif;
-
-} 
-.navbar-nav .nav-item{
+}
+form h2 {
+  font-family: "Crimson Text", serif;
+}
+.navbar-nav .nav-item {
   margin-left: 2rem;
 }
 
@@ -98,7 +98,7 @@ footer{
 ul {
   list-style-type: none;
 }
-#regLink{
+#regLink {
   padding: 1rem;
   margin-top: 1rem;
 }

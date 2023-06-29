@@ -1,13 +1,10 @@
-@import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Nunito&display=swap");
 
-
-
-.quotes-container{
+.quotes-container {
   display: flexbox;
   font-family: Crimson;
 }
 #quote-box {
-  
   background: violet;
   width: 40rem;
   margin: 1rem auto;
@@ -33,13 +30,12 @@
   margin-top: 2rem;
 }
 
-
 #new-quote {
   background: #0059ff;
   border: none;
   color: #fff;
-  padding: .7rem 1rem;
-  font-size: .9rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.9rem;
   font-weight: bold;
   border-radius: 20px;
   outline: none;

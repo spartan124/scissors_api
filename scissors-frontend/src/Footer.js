@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const Footer = () => {
   return (
@@ -14,22 +14,27 @@ const Footer = () => {
               nisi ut aliquip ex ea commodo consequat.
             </p>
           </div>
-         
+
           <div class="col-12 col-md-6 columnContent">
             <h2 class="mb-3">Quick Links</h2>
             <ul>
               <>
-              <li><a href='www.github.com/spartan124'>Github</a></li>
+                <li>
+                  <a href="www.github.com/spartan124">Github</a>
+                </li>
               </>
               <>
-              <li><a href ='www.twitter.com/jer_ryO'>Twitter</a></li>
+                <li>
+                  <a href="www.twitter.com/jer_ryO">Twitter</a>
+                </li>
               </>
               <>
-              <li><a href ='www.linkedin.com/in/jerrylyte'>LinkedIn</a></li>
+                <li>
+                  <a href="www.linkedin.com/in/jerrylyte">LinkedIn</a>
+                </li>
               </>
             </ul>
           </div>
-           
         </div>
       </div>
     </footer>
