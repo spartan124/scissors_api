@@ -19,7 +19,7 @@ const Navbar = () => {
             }
         };
         fetchUser();
-    }, []);
+    }, [currentUser]);
 
     const handleLogout = () => {
     AuthService.logout();
@@ -52,9 +52,7 @@ const Navbar = () => {
       </ul>
       {currentUser ? (
           <>
-            <li>
-              <p className='text-white'><span>Welcome, {currentUser.user}!</span></p>
-            </li>
+            
             <li>
               <button className='btn btn-danger' onClick={handleLogout}>Logout</button>
             </li>
