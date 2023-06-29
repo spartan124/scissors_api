@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import api from './api';
 import { useParams } from 'react-router-dom';
-
+import Row from 'react-bootstrap/esm/Row';
+import Col from 'react-bootstrap/esm/Col';
 function QrCodePage() {
   const [imageSrc, setImageSrc] = useState(null);
   const [error, setError] = useState(null);
@@ -29,7 +30,9 @@ function QrCodePage() {
     const fetchShortenedUrl = async () => {
         try {
           const response = await api.get(`/shortened/${shortCode}`);
-          setShortenedUrl(response.data.shortened_url);
+
+          setShortenedUrl(response.data['shortened_url']);
+         
         } catch (error) {
           setError('Failed to fetch shortened URL');
           console.error('Failed to fetch shortened URL:', error);
@@ -41,15 +44,24 @@ function QrCodePage() {
   }, [shortCode]);
 
   return (
-    <div>
-      <h2>Qr Code {shortenedUrl}</h2>
+    <div className='wrapper text-center mt-3'>
+      <Row>
+        <Col>
+        
       {imageSrc ? (
+        <div className=''>
+          <h2 className='text-center'>QRCODE{shortenedUrl}</h2>
         <img src={imageSrc} alt="QR code for short url" />
+        </div>
+        
       ) : (
         <p>Loading QRCode data...</p>
       )}
-      <p>QrCode for:  {shortenedUrl}</p>
+      <p>QrCode for: <a href={` https://scix.me/${shortCode}`}>{` https://scix.me/${shortCode}`}</a> </p>
       {error && <p>{error}</p>}
+        </Col>
+      </Row>
+      
     </div>
   );
 }
