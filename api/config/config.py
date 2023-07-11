@@ -4,9 +4,17 @@ from flask_caching import Cache, SimpleCache
 from decouple import config
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-
+import redis
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+
+
+redis_client = redis.Redis(
+  host='redis-15144.c292.ap-southeast-1-1.ec2.cloud.redislabs.com',
+  port=15144,
+  db=0,
+  password=config("REDIS_PASS")
+  )
 
 CACHE_DEFAULT_TIMEOUT = 300  # Cache timeout in seconds
 
@@ -15,9 +23,11 @@ cache = Cache(config={'CACHE_TYPE': 'SimpleCache'}, with_jinja2_ext=False)
 simCache = SimpleCache()
 limiter = Limiter(
     key_func=get_remote_address,
-    default_limits=["1000 per day", "50 per hour"]
+    default_limits=["1000 per day", "50 per hour"],
+   
+   
+    strategy="fixed-window",
 )
-limiter._storage_backend = cache
 
 
 class Config:
