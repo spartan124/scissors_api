@@ -1,6 +1,7 @@
 import React from "react";
 
 const Footer = () => {
+  const today = new Date();
   return (
     <footer>
       <div class="container text-center text-white pt-5 pb-5 mt-5">
@@ -32,6 +33,13 @@ const Footer = () => {
                 </li>
               </p>
             </ul>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-12">
+            <p>
+            &copy; {today.getFullYear()} Jerrylyte • Built with Flask, React & Postgres
+            </p>
           </div>
         </div>
       </div>
