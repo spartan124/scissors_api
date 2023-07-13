@@ -1,5 +1,6 @@
 from datetime import datetime
 import qrcode
+import socket  
 from flask_restx import Resource, Namespace, fields, abort
 from flask import jsonify, make_response, render_template, request, redirect, send_file
 from ..models import Url, Click, save, delete, update
@@ -150,7 +151,7 @@ class URLRedirect(Resource):
         url = Url.query.filter_by(short_code=short_code).first()
         
         if url:
-            import socket   
+             
             hostname=socket.gethostname()   
             ip_address =socket.gethostbyname(hostname)   
             geolocation_data = get_geolocation(ip_address)
