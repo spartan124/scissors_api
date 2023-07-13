@@ -18,18 +18,18 @@ const Footer = () => {
             <ul>
               <p>
                 <li>
-                <a href="https://www.github.com/spartan124">Github</a>
+                <a class="social-icons" href="https://github.com/spartan124" target="_blank" rel="noreferrer"><ion-icon name="logo-github"></ion-icon> Github</a>
                 </li>
               
               </p>
               <p>
                 <li>
-                  <a href="https://www.twitter.com/jer_ryO">Twitter</a>
+                  <a class="social-icons" href="https://twitter.com/jer_ryO" target="_blank" rel="noreferrer"><ion-icon name="logo-twitter"></ion-icon> Twitter</a>
                 </li>
               </p>
               <p>
                 <li>
-                  <a href="https://www.linkedin.com/in/jerrylyte">LinkedIn</a>
+                  <a class="social-icons" href="https://www.linkedin.com/in/jerrylyte" target="_blank" rel="noreferrer"> <ion-icon name="logo-linkedin"></ion-icon> LinkedIn</a>
                 </li>
               </p>
             </ul>
