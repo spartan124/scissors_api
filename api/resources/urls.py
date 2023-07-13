@@ -150,7 +150,9 @@ class URLRedirect(Resource):
         url = Url.query.filter_by(short_code=short_code).first()
         
         if url:
-            ip_address = request.remote_addr
+            import socket   
+            hostname=socket.gethostname()   
+            ip_address =socket.gethostbyname(hostname)   
             geolocation_data = get_geolocation(ip_address)
             click = Click(url_id=url.id, click_source=geolocation_data)
             save(click)
