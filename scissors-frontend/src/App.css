@@ -69,6 +69,12 @@ footer {
   background-color: #1d2547;
 }
 
+.social-icons {
+  transition: color 0.2s;
+  text-decoration: none;
+  margin: 0 10px;
+  vertical-align: baseline;
+}
 form {
   width: auto;
   background-color: #fff;
