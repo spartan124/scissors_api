@@ -1,0 +1,74 @@
+services:
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: scissors
+      POSTGRES_PASSWORD: scissors
+      POSTGRES_DB: scissors
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scissors -d scissors"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - scissors_net
+
+  # ── Redis ───────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - scissors_net
+
+  # ── FastAPI app ─────────────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: prod
+      DEBUG: "false"
+      DATABASE_URL: postgresql+asyncpg://scissors:scissors@postgres:5432/scissors
+      REDIS_URL: redis://redis:6379/0
+      # Override these in .env or via `docker compose --env-file`
+      SECRET_KEY: ${SECRET_KEY:-changeme-replace-in-production}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-changeme-jwt-replace-in-production}
+      WORKERS: "4"
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-["*"]}
+      GEOIPIFY_API_KEY: ${GEOIPIFY_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - scissors_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  scissors_net:
+    driver: bridge
